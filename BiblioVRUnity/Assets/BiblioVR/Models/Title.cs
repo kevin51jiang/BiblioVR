@@ -1,0 +1,109 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+
+namespace BiblioVR.Core
+{
+    /// <summary>
+    /// Represents a Title
+    /// </summary>
+    public abstract class Title
+    {
+        /// <summary>
+        /// Update the user's location in this Title
+        /// </summary>
+        /// <param name="chapter">User's current Chapter</param>
+        /// <param name="page">User's current Page</param>
+        public abstract void UpdateLocation(string chapter, string page);
+
+        /// <summary>
+        /// Update the user's location in the Title and save the properties file
+        /// </summary>
+        /// <param name="chapter">User's current Chapter</param>
+        /// <param name="page">User's current Page</param>
+        public abstract void Save(string chapter, string page);
+
+        // TODO: more properties
+        /// <summary>
+        /// Update the properties for the Title
+        /// </summary>
+        /// <param name="title"></param>
+        public abstract void UpdateProperties(string title, string lang, string group);
+
+        /// <summary>
+        /// Get the name of the title
+        /// </summary>
+        /// <returns>The name of this Title</returns>
+        public abstract string GetTitle();
+
+        /// <summary>
+        /// Get the user-specified nickname for the manga
+        /// </summary>
+        /// <returns>The User-specified override title</returns>
+        public abstract string GetUserTitle();
+
+        /// <summary>
+        /// Return the list of chapters
+        /// </summary>
+        /// <returns>The ArrayList of Chapter objects</returns>
+        public abstract List<Chapter> GetChapters();
+
+        /// <summary>
+        /// Get the user's current chapter
+        /// </summary>
+        /// <returns>The user's current chapter</returns>
+        public abstract string GetCurrentChapter();
+
+        /// <summary>
+        /// Get the user's current page
+        /// </summary>
+        /// <returns>The user's current page</returns>
+        public abstract string GetCurrentPage();
+
+        /// <summary>
+        /// Get this title's ID
+        /// </summary>
+        /// <returns>The ID of the title</returns>
+        public abstract string GetID();
+
+        /// <summary>
+        /// Are any chapters in this title downloading?
+        /// </summary>
+        /// <returns>True if any chapters are downloading</returns>
+        public abstract bool IsDownloading();
+
+        /// <summary>
+        /// Get the Type of a Title
+        /// </summary>
+        /// <param name="dir">Title's directory</param>
+        /// <returns></returns>
+        public static TitleType GetType(DirectoryInfo dir)
+        {
+            try
+            {
+                string input = File.ReadAllText(FileHelper.GetFilePath(dir, "manga.json"));
+                MangaInfo info = JsonConvert.DeserializeObject<MangaInfo>(input);
+                switch (info.Type)
+                {
+                    case "manga":
+                        return TitleType.MANGA;
+                    default:
+                        return TitleType.NULL;
+                }
+            }
+            catch (Exception)
+            {
+                return TitleType.NULL;
+            }
+        }
+    }
+}
